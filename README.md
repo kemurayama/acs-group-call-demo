@@ -16,7 +16,7 @@ This repository is for group call on Azure Communication Services.
 2. Run `yarn install` (or `npm install`) at repository root
 3. Go to `api` folder
 4. Run `python -m venv .venv`
-5. Run `pip install`
+5. Run `pip install -r requirements.txt`
 6. Open `api` by VS Code
 7. Create New Azure Functions Project. (`Ctrl + Shift + P` then choose `Azure Functions: Create New Project...`)
 
