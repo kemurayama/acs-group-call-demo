@@ -1,0 +1,36 @@
+.Call {
+  text-align: center;
+}
+
+.Call-grid-container {
+  display: grid;
+  grid-column-gap: 10px;
+  /* Decide column */
+  grid-template-columns: auto;
+}
+
+.Call-grid-item {
+  padding: 20px;
+  font-size: 20px;
+  text-align: left;
+}
+
+.Call-input-item {
+  font-size: 15px;
+  padding: 5px;
+  margin: 2px;
+}
+
+.Call-button {
+  padding: 5px;
+  margin: 4px 2px;
+}
+
+.Call-select {
+  padding: 4px 8px;
+}
+
+.Call-names {
+  grid-row: 1/4;
+  background-color: black;
+}

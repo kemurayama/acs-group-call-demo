@@ -1,0 +1,18 @@
+.MediaGallery {
+  display: grid;
+}
+
+.MediaGallery-container {
+  position: relative;
+  height: auto;
+  width: 100%;
+  background: transparent;
+}
+
+.MediaGallery-Style {
+  padding: 0.4375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+}

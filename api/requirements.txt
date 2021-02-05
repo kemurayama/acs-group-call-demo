@@ -1,0 +1,8 @@
+aiohttp
+autopep8
+azure-communication-administration
+azure-functions
+flake8-docstrings
+pytest
+pytest-mock
+pytest-asyncio
