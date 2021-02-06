@@ -21,6 +21,7 @@ function Call() {
     const [selectedMicrophoneDeviceId, setSelectedMicrophoneDeviceId] = useState("");
     const [selectedSpeakerDeviceId, setSelectedSpeakerDeviceId] = useState("");
     const [isVideoEnabled, setIsVideoEnabled] = useState(false);
+    const [isScreenShared, setIsScreenShared] = useState(false);
     const [call, setCall] = useState(null);
     const [callState, setCallState] = useState("");
 
@@ -151,6 +152,7 @@ function Call() {
                     participant.on('participantStateChanged', () => {
                         console.log('participant stateChanged', userId, participant.state);
                         setRemoteParticiPants([...call.remoteParticipants.values()]);
+
                     });
 
                     participant.on('isSpeakingChanged', () => {
@@ -168,6 +170,22 @@ function Call() {
                     });
                 };
             }));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function toggleScreenShare() {
+        if (!call) {
+            return;
+        }
+        try {
+            if (!isScreenShared) {
+                await call.startScreenSharing();
+            } else {
+                await call.stopScreenSharing();
+            }
+            setIsScreenShared(!isScreenShared);
         } catch (error) {
             console.log(error);
         }
@@ -401,6 +419,13 @@ function Call() {
                         disabled={!call || call.state === "Disconnected"}
                         onClick={hangUpCall}>
                         Leave Group Call
+                    </button>
+                    <button
+                        className="Call-button"
+                        itemType="button"
+                        disabled={!call || call.state === "Disconnected"}
+                        onClick={toggleScreenShare}>
+                        Screen Share
                     </button>
                 </div>
             </div>

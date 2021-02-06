@@ -36,6 +36,13 @@ function RemoteStreamMedia(props) {
         if (stream.isAvailable) {
             renderStream();
         }
+
+        return () => {
+            if (rendererView) {
+                rendererView.dispose();
+                setAvailable(false);
+            };
+        }
     }, [stream]);
 
     return (
