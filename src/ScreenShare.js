@@ -1,30 +1,31 @@
 import { useEffect, useState } from "react";
 import { Renderer } from "@azure/communication-calling";
-import "./MediaGallery.css"
 
 
-function LocalStreamMedia(props) {
+function ScreenShare(props) {
     let rendererView;
+    const streamId = "screenShare"
     const [available, setAvailable] = useState(false);
-    const videoID = "localVideo";
 
     useEffect(() => {
         (async () => {
-            if (props.stream) {
+            if (props.stream && props.stream.isAvailable) {
+                setAvailable(true);
                 var renderer = new Renderer(props.stream);
                 // eslint-disable-next-line
-                rendererView = await renderer.createView({ scalingMode: 'Crop' });
-                props.setView(rendererView);
+                rendererView = await renderer.createView({
+                    scalingMode: 'Crop',
+                    mirrored: false
+                });
 
-                var container = document.getElementById(videoID);
+                var container = document.getElementById(streamId);
                 if (container && container.childElementCount === 0) {
                     container.appendChild(rendererView.target);
-                    setAvailable(true);
                 }
             } else {
+                setAvailable(false);
                 if (rendererView) {
                     rendererView.dispose();
-                    setAvailable(false);
                 }
             }
         })();
@@ -39,9 +40,9 @@ function LocalStreamMedia(props) {
 
     return (
         <div className="MediaGallery-container">
-            <div className="MediaGallery-container" style={{ display: available ? 'block' : 'none' }} id={videoID} />
+            <div className="MediaGallery-container" style={{ display: available ? 'block' : 'none' }} id={streamId} />
         </div>
-    )
+    );
 }
 
-export default LocalStreamMedia;
+export default ScreenShare;

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Renderer } from "@azure/communication-calling";
+import { utils } from "./Utils/Utils";
 import "./MediaGallery.css";
 
-import { utils } from "./Utils/Utils";
 
 function RemoteStreamMedia(props) {
     let rendererView;

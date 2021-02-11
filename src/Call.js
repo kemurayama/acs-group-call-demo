@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { CallClient, LocalVideoStream } from "@azure/communication-calling";
 import { AzureCommunicationTokenCredential } from '@azure/communication-common';
 import { v1 as createGUID } from "uuid";
-
-import './Call.css';
-import { utils } from './Utils/Utils';
 import MediaGallery from './MediaGallery';
 import LocalStreamMedia from "./LocalStreamMedia";
+import ScreenShare from './ScreenShare';
+import { utils } from './Utils/Utils';
+import './Call.css';
 
 function Call() {
     const baseURL = "/api";
@@ -22,16 +22,15 @@ function Call() {
     const [selectedSpeakerDeviceId, setSelectedSpeakerDeviceId] = useState("");
     const [isVideoEnabled, setIsVideoEnabled] = useState(false);
     const [isScreenShared, setIsScreenShared] = useState(false);
+    const [isScreenSharing, setIsScreenSharing] = useState(false);
     const [call, setCall] = useState(null);
     const [callState, setCallState] = useState("");
-
+    const [screenShareStream, setScreenShareStream] = useState();
     const [view, setView] = useState(null);
     const [isMicrosphoneEnabled, setIsMicrophone] = useState(false);
     const [groupID, setGroupID] = useState(createGUID());
     const [localVideoStream, setLocalVideoStream] = useState(null);
     const tempUserName = "User" + String(Math.floor(Math.random() * 1001));
-
-    // eslint-disable-next-line
     const [remoteParticipants, setRemoteParticiPants] = useState([]);
 
     async function createUser() {
@@ -84,7 +83,6 @@ function Call() {
         const token = await fetchNewTokenForCurrentUser();
         setVoIPToken(token);
         await initClient(token);
-
     }
 
     async function initClient(token) {
@@ -125,6 +123,7 @@ function Call() {
                     addedCall.on('callStateChanged', () => {
                         setCallState(addedCall.state);
                     });
+
                     addedCall.on('remoteParticipantsUpdated', (ev) => {
                         ev.added.forEach((addedRemoteParticipant) => {
                             console.log('participantAdded', addedRemoteParticipant);
@@ -137,6 +136,12 @@ function Call() {
                             setRemoteParticiPants([...addedCall.remoteParticipants.values()]);
                         }
                     });
+
+                    addedCall.on('isScreenSharingOnChanged', (ev) => {
+                        console.log("Event is Shared");
+                        setIsScreenSharing(addedCall.isScreenSharingOn);
+                    });
+
                     const rp = [...addedCall.remoteParticipants.values()];
                     rp.forEach((v) => subscribeToParticipant(v, addedCall));
                     setRemoteParticiPants(rp);
@@ -161,9 +166,16 @@ function Call() {
 
                     participant.on('videoStreamsUpdated', e => {
                         e.added.forEach(addedStream => {
+                            if (addedStream.type === 'Video') {
+                                return;
+                            }
                             addedStream.on('availabilityChanged', async () => {
-                                if (addedStream.type === 'Video') {
-                                    return;
+                                if (addedStream.isAvailable) {
+                                    setScreenShareStream(addedStream);
+                                    setIsScreenShared(true);
+                                } else {
+                                    setScreenShareStream(undefined);
+                                    setIsScreenShared(false);
                                 }
                             });
                         });
@@ -176,19 +188,12 @@ function Call() {
     }
 
     async function toggleScreenShare() {
-        if (!call) {
-            return;
+        if (call && !isScreenSharing) {
+            await call.startScreenSharing();
+        } else if (call && isScreenSharing) {
+            await call.stopScreenSharing();
         }
-        try {
-            if (!isScreenShared) {
-                await call.startScreenSharing();
-            } else {
-                await call.stopScreenSharing();
-            }
-            setIsScreenShared(!isScreenShared);
-        } catch (error) {
-            console.log(error);
-        }
+        setIsScreenSharing(!isScreenSharing);
     }
 
     const handleGroupID = (event) => setGroupID(event.target.value);
@@ -381,13 +386,17 @@ function Call() {
                 </div>
                 {
                     (call && call.state === "Connected") ?
-                        <MediaGallery
-                            remoteParticipants={remoteParticipants}
-                            userId={acsID}
-                            displayName={userName ? userName : tempUserName}
-                            localVideoStream={localVideoStream}
-                            setView={setView}
-                        />
+                        (isScreenShared ?
+                            <ScreenShare stream={screenShareStream} />
+                            :
+                            <MediaGallery
+                                remoteParticipants={remoteParticipants}
+                                userId={acsID}
+                                displayName={userName ? userName : tempUserName}
+                                localVideoStream={localVideoStream}
+                                setView={setView}
+                            />
+                        )
                         :
                         <LocalStreamMedia stream={localVideoStream} setView={setView} />
                 }
@@ -409,7 +418,7 @@ function Call() {
                     <button
                         className="Call-button"
                         itemType="button"
-                        disabled={!deviceManager}
+                        disabled={!callAgent}
                         onClick={startCall}>
                         Join Group Call
                     </button>
@@ -425,7 +434,7 @@ function Call() {
                         itemType="button"
                         disabled={!call || call.state === "Disconnected"}
                         onClick={toggleScreenShare}>
-                        Screen Share
+                        Screen Share {!isScreenSharing ? "On" : "Off"}
                     </button>
                 </div>
             </div>
