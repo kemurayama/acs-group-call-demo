@@ -1,4 +1,4 @@
-# Azure Communication Services Group Call Services
+# Azure Communication Services Group Call Demo
 
 This repository is for group call on Azure Communication Services.
 
@@ -41,7 +41,32 @@ Set Connection String value at `local.settings.json` after creating New Project 
 1. Run `yarn start` or `npm start`
 2. Run `func host start` at api
 
+## Deploy to Azure Static Web Apps
+
+This App backend is Azure Functions. So you can deploy to [Azure Static Web Apps](https://docs.microsoft.com/en-us/azure/static-web-apps/).
+
+### How to deploy
+
+Clone (`git clone`) or Fork this repository.
+
+Go to Azure Portal and [create Azure Static Web Apps](https://docs.microsoft.com/en-us/azure/static-web-apps/getting-started?tabs=react).
+
+Choose your cloned repo and set build details.
+
+- Build Presets: React
+- App location: `/`
+- Api location: api
+- Outout location: build
+
+Now python function has an issue on deploying according to [this issue](https://github.com/Azure/static-web-apps/issues/238).
+
+You need to fix yaml like this repo's [workflow](.github/workflows/sampleworkflow.yml).
+
+[Set Azure Communication Services connection string](https://docs.microsoft.com/en-us/azure/static-web-apps/application-settings) on Azure Static Web Apps.
+
 ## Reference
+
+This repository refferred to these samples.
 
 - [Group Calling Sample](https://github.com/Azure-Samples/communication-services-web-calling-hero)
 - [ACS Calling Tutorial](https://github.com/Azure-Samples/communication-services-web-calling-tutorial)
