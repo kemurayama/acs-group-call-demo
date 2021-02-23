@@ -1,4 +1,4 @@
-import { isCallingApplicationIdentifier, isPhoneNumberIdentifier, isCommunicationUserIdentifier } from '@azure/communication-common';
+import { isCommunicationUserIdentifier, isPhoneNumberIdentifier } from '@azure/communication-common';
 
 export const utils = {
     getIdentifierText: (identifier) => {
@@ -6,8 +6,6 @@ export const utils = {
             return identifier.communicationUserId;
         } else if (isPhoneNumberIdentifier(identifier)) {
             return identifier.phoneNumber;
-        } else if (isCallingApplicationIdentifier(identifier)) {
-            return identifier.callingApplicationId;
         } else {
             return 'Unknwon Identifier';
         }
@@ -15,8 +13,6 @@ export const utils = {
     getId: (identifier) => {
         if (isCommunicationUserIdentifier(identifier)) {
             return identifier.communicationUserId;
-        } else if (isCallingApplicationIdentifier(identifier)) {
-            return identifier.callingApplicationId;
         } else if (isPhoneNumberIdentifier(identifier)) {
             return identifier.phoneNumber;
         } else {
