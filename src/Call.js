@@ -33,6 +33,10 @@ function Call() {
     const tempUserName = "User" + String(Math.floor(Math.random() * 1001));
     const [remoteParticipants, setRemoteParticiPants] = useState([]);
 
+    const [speakers, setSpeakers] = useState();
+    const [cameras, setCameras] = useState();
+    const [microphones, setMicrophones] = useState();
+
     async function createUser() {
         async function requestCreateUSer(url, requestBody) {
             const response = await fetch(
@@ -100,15 +104,23 @@ function Call() {
             const addedCallAgent = await callClient.createCallAgent(tokenCredential, { displayName: userName ? userName : tempUserName });
             const addedDeviceManager = await callClient.getDeviceManager();
             const result = await addedDeviceManager.askDevicePermission(true, true);
+            const speakers = await addedDeviceManager.getSpeakers();
+            const microphones = await addedDeviceManager.getMicrophones();
+            const cameras = await addedDeviceManager.getCameras();
+
+            setSpeakers(speakers);
+            setMicrophones(microphones);
+            setCameras(cameras);
+
             if (result.audio !== undefined) {
                 if (result.audio) {
-                    setSelectedMicrophoneDeviceId(addedDeviceManager.getMicrophoneList()[0].id);
-                    setSelectedSpeakerDeviceId(addedDeviceManager.getSpeakerList()[0].id);
+                    setSelectedMicrophoneDeviceId(microphones[0].id);
+                    setSelectedSpeakerDeviceId(speakers[0].id);
                 }
             }
             if (result.video !== undefined) {
                 if (result.video) {
-                    setSelectedCameraDeviceId(addedDeviceManager.getCameraList()[0].id);
+                    setSelectedCameraDeviceId(cameras[0].id);
                 }
             }
             setCallAgent(addedCallAgent);
@@ -120,7 +132,7 @@ function Call() {
                         addedCall.reject();
                         return;
                     }
-                    addedCall.on('callStateChanged', () => {
+                    addedCall.on('stateChanged', () => {
                         setCallState(addedCall.state);
                     });
 
@@ -128,12 +140,12 @@ function Call() {
                         ev.added.forEach((addedRemoteParticipant) => {
                             console.log('participantAdded', addedRemoteParticipant);
                             subscribeToParticipant(addedRemoteParticipant, addedCall);
-                            setRemoteParticiPants([...addedCall.remoteParticipants.values()]);
+                            setRemoteParticiPants([...addedCall.remoteParticipants]);
                         });
 
                         if (ev.removed.length > 0) {
                             console.log('participantRemoved');
-                            setRemoteParticiPants([...addedCall.remoteParticipants.values()]);
+                            setRemoteParticiPants([...addedCall.remoteParticipants]);
                         }
                     });
 
@@ -142,7 +154,7 @@ function Call() {
                         setIsScreenSharing(addedCall.isScreenSharingOn);
                     });
 
-                    const rp = [...addedCall.remoteParticipants.values()];
+                    const rp = [...addedCall.remoteParticipants];
                     rp.forEach((v) => subscribeToParticipant(v, addedCall));
                     setRemoteParticiPants(rp);
                     setCallState(addedCall.state);
@@ -154,14 +166,14 @@ function Call() {
 
                 const subscribeToParticipant = (participant, call) => {
                     const userId = utils.getId(participant.identifier);
-                    participant.on('participantStateChanged', () => {
+                    participant.on('stateChanged', () => {
                         console.log('participant stateChanged', userId, participant.state);
-                        setRemoteParticiPants([...call.remoteParticipants.values()]);
+                        setRemoteParticiPants([...call.remoteParticipants]);
 
                     });
 
                     participant.on('isSpeakingChanged', () => {
-                        setRemoteParticiPants([...call.remoteParticipants.values()]);
+                        setRemoteParticiPants([...call.remoteParticipants]);
                     });
 
                     participant.on('videoStreamsUpdated', e => {
@@ -169,7 +181,7 @@ function Call() {
                             if (addedStream.type === 'Video') {
                                 return;
                             }
-                            addedStream.on('availabilityChanged', async () => {
+                            addedStream.on('isAvailableChanged', () => {
                                 if (addedStream.isAvailable) {
                                     setScreenShareStream(addedStream);
                                     setIsScreenShared(true);
@@ -201,16 +213,24 @@ function Call() {
     const handleACSIDChange = (event) => setACSID(event.target.value);
     const handleVoIPToken = (event) => setVoIPToken(event.target.value);
     const handleCamera = (event) => setSelectedCameraDeviceId(event.target.value);
-    const handleSpeaker = (event) => {
+
+    const handleSpeaker = async (event) => {
         setSelectedSpeakerDeviceId(event.target.value)
-        deviceManager.setSpeaker(event.target.value);
+        const speakerDeviceInfo = speakers.find(speakerDevice => {
+            return speakerDevice.id === event.target.value;
+        });
+        deviceManager.selectSpeaker(speakerDeviceInfo);
     };
     const handleMicrophone = (event) => {
         setSelectedMicrophoneDeviceId(event.target.value);
-        deviceManager.setMicrophone(event.target.value);
+        const microphoneDeviceInfo = microphones.find(microphoneDevice => {
+            return microphoneDevice.id === event.target.value;
+        });
+        setIsMicrophone(true);
+        deviceManager.selectMicrophone(microphoneDeviceInfo);
     };
     async function toggleVideoCamera() {
-        const cameraDeviceInfo = deviceManager.getCameraList().find(cameraDevice => {
+        const cameraDeviceInfo = await cameras.find(cameraDevice => {
             return cameraDevice.id === selectedCameraDeviceId;
         });
 
@@ -337,8 +357,8 @@ function Call() {
                     <select className="Call-select" name="camera" id="camera" value={selectedCameraDeviceId} onChange={handleCamera}>
                         <option key="camera-none" id="camera-none" value="" >Not selected</option>
                         {
-                            deviceManager &&
-                            deviceManager.getCameraList().map(
+                            cameras &&
+                            cameras.map(
                                 camera => (<option key={camera.id} id={camera.id} value={camera.id} >{camera.name}</option>)
                             )
                         }
@@ -349,8 +369,8 @@ function Call() {
                     <select className="Call-select" name="microphone" id="microphone" value={selectedMicrophoneDeviceId} onChange={handleMicrophone}>
                         <option key="camera-none" id="camera-none" value="" >Not selected</option>
                         {
-                            deviceManager &&
-                            deviceManager.getMicrophoneList().map(
+                            microphones &&
+                            microphones.map(
                                 microphone => (<option key={microphone.id} id={microphone.id} value={microphone.id} >{microphone.name}</option>)
                             )
                         }
@@ -361,8 +381,8 @@ function Call() {
                     <select className="Call-select" name="speaker" id="speaker" value={selectedSpeakerDeviceId} onChange={handleSpeaker}>
                         <option key="camera-none" id="camera-none" value="" >Not selected</option>
                         {
-                            deviceManager &&
-                            deviceManager.getSpeakerList().map(
+                            speakers &&
+                            speakers.map(
                                 speaker => (<option key={speaker.id} id={speaker.id} value={speaker.id} >{speaker.name}</option>)
                             )
                         }
