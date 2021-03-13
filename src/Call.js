@@ -30,7 +30,8 @@ function Call() {
     const [isMicrosphoneEnabled, setIsMicrophone] = useState(false);
     const [groupID, setGroupID] = useState(createGUID());
     const [localVideoStream, setLocalVideoStream] = useState(null);
-    const tempUserName = "User" + String(Math.floor(Math.random() * 1001));
+    const array = crypto.getRandomValues(new Uint32Array(4));
+    const tempUserName = "User" + String(...array);
     const [remoteParticipants, setRemoteParticiPants] = useState([]);
 
     const [speakers, setSpeakers] = useState();
@@ -81,7 +82,6 @@ function Call() {
         const token = tokenJson.access_token;
         return token;
     }
-
 
     async function issueVoIPToken() {
         const token = await fetchNewTokenForCurrentUser();
