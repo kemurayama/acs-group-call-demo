@@ -160,20 +160,12 @@ function Call() {
                     setCallState(addedCall.state);
                 });
 
-                e.removed.forEach(removedCall => {
-
-                });
-
                 const subscribeToParticipant = (participant, call) => {
                     const userId = utils.getId(participant.identifier);
                     participant.on('stateChanged', () => {
                         console.log('participant stateChanged', userId, participant.state);
                         setRemoteParticiPants([...call.remoteParticipants]);
 
-                    });
-
-                    participant.on('isSpeakingChanged', () => {
-                        setRemoteParticiPants([...call.remoteParticipants]);
                     });
 
                     participant.on('videoStreamsUpdated', e => {
