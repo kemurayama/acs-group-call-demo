@@ -13,12 +13,12 @@ This repository is for group call on Azure Communication Services.
 ## Set Up
 
 1. Clone This Repository
-2. Run `yarn install` (or `npm install`) at repository root
+2. Run `npm install` (or `yarn install`) at repository root
 3. Go to `api` folder
 4. Create New Azure Functions Project. (`Ctrl + Shift + P` then choose `Azure Functions: Create New Project...` on Visual Studio Code)
 5. Activate virtualenv if not activated (`source .venv/bin/activate` or `\.venv\Scripts\activate`)
 6. Run `pip install -r requirements.txt`
-7. Open `api` by VS Code
+
 
 ## Create Azure Resources
 
@@ -57,10 +57,6 @@ Choose your cloned repo and set build details.
 - App location: `/`
 - Api location: api
 - Outout location: build
-
-Now python function has an issue on deploying according to [this issue](https://github.com/Azure/static-web-apps/issues/238).
-
-You need to fix yaml like this repo's [workflow](.github/workflows/sampleworkflow.yml).
 
 [Set Azure Communication Services connection string](https://docs.microsoft.com/en-us/azure/static-web-apps/application-settings) on Azure Static Web Apps.
 
