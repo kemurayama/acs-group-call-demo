@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Renderer } from "@azure/communication-calling";
+import { VideoStreamRenderer } from "@azure/communication-calling";
 import { utils } from "./Utils/Utils";
 import "./MediaGallery.css";
 
@@ -15,7 +15,7 @@ function RemoteStreamMedia(props) {
             var container = document.getElementById(streamId);
             if (container && props.stream && props.stream.isAvailable) {
                 setAvailable(true);
-                var renderer = new Renderer(props.stream);
+                var renderer = new VideoStreamRenderer(props.stream);
                 // eslint-disable-next-line
                 rendererView = await renderer.createView({ scalingMode: 'Crop' });
                 if (container && container.childElementCount === 0) {

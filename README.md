@@ -19,7 +19,6 @@ This repository is for group call on Azure Communication Services.
 5. Activate virtualenv if not activated (`source .venv/bin/activate` or `\.venv\Scripts\activate`)
 6. Run `pip install -r requirements.txt`
 
-
 ## Create Azure Resources
 
 - [Create Azure Communication Services](https://docs.microsoft.com/en-us/azure/communication-services/quickstarts/create-communication-resource?tabs=windows&pivots=platform-azp)

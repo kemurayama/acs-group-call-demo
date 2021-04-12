@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Renderer } from "@azure/communication-calling";
+import { VideoStreamRenderer } from "@azure/communication-calling";
 import "./MediaGallery.css"
 
 
@@ -11,7 +11,8 @@ function LocalStreamMedia(props) {
     useEffect(() => {
         (async () => {
             if (props.stream) {
-                var renderer = new Renderer(props.stream);
+                var renderer = new VideoStreamRenderer(props.stream);
+
                 // eslint-disable-next-line
                 rendererView = await renderer.createView({ scalingMode: 'Crop' });
                 props.setView(rendererView);

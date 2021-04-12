@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Renderer } from "@azure/communication-calling";
+import { VideoStreamRenderer } from "@azure/communication-calling";
 
 
 function ScreenShare(props) {
@@ -11,7 +11,7 @@ function ScreenShare(props) {
         (async () => {
             if (props.stream && props.stream.isAvailable) {
                 setAvailable(true);
-                var renderer = new Renderer(props.stream);
+                var renderer = new VideoStreamRenderer(props.stream);
                 // eslint-disable-next-line
                 rendererView = await renderer.createView({
                     scalingMode: 'Crop',
