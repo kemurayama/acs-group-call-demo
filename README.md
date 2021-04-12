@@ -4,16 +4,15 @@ This repository is for group call on Azure Communication Services.
 
 ## Prerequisites
 
-- [Node.js v1.14](https://nodejs.org/en/)
+- [Node.js v14.15.1 above](https://nodejs.org/en/)
 - [Python 3.8](https://www.python.org/)
 - [Azure Functions Core Tools](https://docs.microsoft.com/ja-jp/azure/azure-functions/functions-run-local?tabs=windows%2Ccsharp%2Cbash)
 - [Visual Studio Code](https://code.visualstudio.com/)
-- [yarn](https://classic.yarnpkg.com/en/docs/install/#windows-stable) (Optional)
 
 ## Set Up
 
 1. Clone This Repository
-2. Run `npm install` (or `yarn install`) at repository root
+2. Run `npm install` at repository root
 3. Go to `api` folder
 4. Create New Azure Functions Project. (`Ctrl + Shift + P` then choose `Azure Functions: Create New Project...` on Visual Studio Code)
 5. Activate virtualenv if not activated (`source .venv/bin/activate` or `\.venv\Scripts\activate`)
@@ -37,7 +36,7 @@ Set Connection String value at `local.settings.json` after creating New Project 
 
 ## Start Application
 
-1. Run `yarn start` or `npm start`
+1. Run `npm start`
 2. Run `func host start` at api (Don't forget activate your venv)
 
 ## Deploy to Azure Static Web Apps
