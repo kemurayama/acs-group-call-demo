@@ -31,7 +31,7 @@ function RemoteStreamMedia(props) {
         if (!stream) {
             return;
         }
-        stream.on('availabilityChanged', renderStream);
+        stream.on('isAvailableChanged', renderStream);
 
         if (stream.isAvailable) {
             renderStream();
